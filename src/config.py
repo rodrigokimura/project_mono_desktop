@@ -8,3 +8,4 @@ load_dotenv("src/.env")
 class Config:
     def __init__(self):
         self.MONO_URL = os.getenv("MONO_URL")
+        self.TOKEN_FILE = os.getenv("TOKEN_FILE")

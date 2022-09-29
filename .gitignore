@@ -1,5 +1,6 @@
 **/__pycache__/
 **/*.env
+**/*.json
 **/_media/*
 *.pyc
 *.pem
