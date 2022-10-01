@@ -1,7 +1,8 @@
 from functools import partial
-from tkinter import Tk, Toplevel, ttk
+from tkinter import BOTH, Tk, Toplevel, ttk
 
-from auth import Auth
+from services.auth import Auth
+from services.checklists import Checklists
 
 
 def new_window(master):
@@ -42,22 +43,52 @@ class App:
         root.mainloop()
 
     def show_main_window(self):
-        root = Tk()
+        self.root = Tk()
+        self.root.title("Mono Project")
 
-        style = ttk.Style(root)
+        style = ttk.Style(self.root)
         style.theme_use("clam")
 
-        frm = ttk.Frame(root, padding=10)
+        frm = ttk.Frame(self.root, padding=10)
         frm.pack()
 
-        ttk.Label(frm, text="Hello World!").grid(column=0, row=0)
-        ttk.Button(frm, text="Quit", command=root.destroy).grid(column=1, row=0)
-
-        ttk.Button(frm, text="New", command=partial(new_window, root)).grid(
-            column=1, row=2
+        ttk.Label(frm, text="Mono Project").grid(column=0, row=0)
+        ttk.Button(frm, text="Checklists", command=self.show_checklists_window).grid(
+            column=0, row=2
         )
 
-        root.mainloop()
+        self.root.mainloop()
+
+    def show_checklists_window(self):
+        self.hide()
+        checlists_window = Toplevel(self.root)
+        checlists_window.title("Checklists")
+
+        checklists = Checklists().list()
+
+        frm = ttk.Frame(checlists_window, padding=10)
+        frm.pack(fill=BOTH, expand=True)
+
+        ttk.Label(frm, text="Checklists").pack()
+
+        def destroy(*args, **kwargs):
+            self.show()
+            checlists_window.destroy()
+
+        checlists_window.bind("<Destroy>", destroy)
+
+        for i, checklist in enumerate(checklists):
+            ttk.Button(
+                frm, text=checklist.name, command=partial(new_window, checlists_window)
+            ).pack()
+
+        checlists_window.mainloop()
+
+    def hide(self):
+        self.root.withdraw()
+
+    def show(self):
+        self.root.deiconify()
 
     def start(self):
         auth = Auth()
